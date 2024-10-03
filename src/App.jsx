@@ -1,26 +1,47 @@
 import React, { useState } from "react";
 import Player from "./components/Player.jsx";
 import GameBoard from "./components/GameBoard.jsx";
+import Log from "./components/Log.jsx";
 
 function App() {
+  const [gameTurns, setGameTurns] = useState([]);
   const [activePlayer, setActivePlayer] = useState("X");
 
-  function handleSelectSquare() {
+  function handleSelectSquare(rowIndex, colIndex) {
     setActivePlayer((currentActPlayer) =>
       currentActPlayer === "X" ? "O" : "X"
     );
+    setGameTurns((prevTurns) => {
+      let currentPlayer = "X";
+      if (prevTurns.length > 0 && prevTurns[0].player === "X") {
+        currentPlayer = "O";
+      }
+      const updateTruns = [
+        { square: { row: rowIndex, col: colIndex }, player: currentPlayer },
+        ...prevTurns,
+      ];
+      return updateTruns;
+    });
   }
 
   return (
     <main>
       <div id="game-container">
-        <ol id="players">
-          <Player initialName="Player 1" symbol="X" />
-          <Player initialName="Player 2" symbol="0" />
+        <ol id="players" className="highlight-player">
+          <Player
+            initialName="Player 1"
+            symbol="X"
+            isActive={activePlayer === "X"}
+          />
+          <Player
+            initialName="Player 2"
+            symbol="O"
+            isActive={activePlayer === "O"}
+          />
         </ol>
-        <GameBoard onSelectGame={handleSelectSquare} />
+        <GameBoard onSelectGame={handleSelectSquare} turns={gameTurns} />
       </div>
-      LOG
+      <Log />
     </main>
   );
 }
